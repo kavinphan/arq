@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    Arq (0.1.0)
+    arq (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -63,9 +63,10 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
+  x86_64-linux
 
 DEPENDENCIES
-  Arq!
+  arq!
   faker
   json
   pry
