@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
-  spec.metadata["changelog_uri"] = "https://github.com/kphan32/arq/blob/main/CODE_OF_CONDUCT.md"
+  spec.metadata["changelog_uri"] = "https://github.com/kphan32/arq/blob/main/CHANGELOG.md"
   spec.metadata["documentation_uri"] = "https://rubydoc.info/github/kphan32/arq/main"
 
   spec.files = Dir["lib/**/*.rb"]

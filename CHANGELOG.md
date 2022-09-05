@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.3] - 2022-09-05
+
+- Correct changelog URI in metadata
+
 ## [0.1.2] - 2022-09-05
 
 - Update Gemfile lock
