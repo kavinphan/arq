@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.2] - 2022-09-05
+
+- Update Gemfile lock
+
 ## [0.1.1] - 2022-09-05
 
 - Add documentation URI
