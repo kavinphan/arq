@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.2.0] - 2022-09-06
+
+- Refactor FailureError to extend Exception
+  - Changed to avoid failures being rescued
+- (Internal) refactored all library requires to be relative
+
 ## [0.1.3] - 2022-09-05
 
 - Correct changelog URI in metadata
