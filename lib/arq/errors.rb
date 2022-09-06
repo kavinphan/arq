@@ -22,7 +22,10 @@ module Arq
     end
   end
 
-  # Raised internally in [Arq::Runnable#hard_fail!] to escape the current action.
-  class FailureError < StandardError
+  # Raised internally in [Arq::Runnable#fail!] to escape the current action.
+  # FailureError extends from Exception to avoid being rescued as a StandardError.
+  # rubocop:disable Lint/InheritException
+  class FailureError < Exception
   end
+  # rubocop:enable Lint/InheritException
 end
