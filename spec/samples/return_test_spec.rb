@@ -38,9 +38,9 @@ describe ReturnTest do
       let(:set_out) { false }
 
       it "raises ReturnValuesNotInContextError" do
-        expect {
+        expect do
           described_class.call(ctx)
-        }.to raise_error(Arq::ReturnValuesNotInContextError)
+        end.to raise_error(Arq::ReturnValuesNotInContextError)
       end
     end
 
