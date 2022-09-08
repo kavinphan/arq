@@ -33,11 +33,11 @@ module Arq
       Arq::Runnable.new(@ctx, [], [], &block)
     end
 
-    def fail!(message)
+    def fail!(message = nil)
       @ctx.fail!(message)
     end
 
-    def fail_now!(message)
+    def fail_now!(message = nil)
       @ctx.fail_now!(message)
     end
 
