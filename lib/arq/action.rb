@@ -3,7 +3,7 @@
 module Arq
   # Module to extend to create an action. Exposes confing functions #call, #params, and #returns.
   module Action
-    def call(ctx)
+    def call(ctx = Arq::Context.new)
       ctx = transform_input_context(ctx)
 
       generate_runnable(ctx).call

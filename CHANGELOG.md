@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- Default `Action#call` param to new context
+
 ## [0.2.0] - 2022-09-06
 
 - Refactor FailureError to extend Exception
