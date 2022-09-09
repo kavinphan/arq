@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.2.1] - 2022-09-08
+
 - Default `Action#call` param to new context
 - Default failure message parameter to nil
 - Fix context and instance variable syncing before and after actions
