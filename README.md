@@ -107,6 +107,33 @@ result = SpellFoo.call(string: "spelling time: ", o_count: 5)
 result[:string] # => "spelling time: fooooo"
 ```
 
+### Anonymous Run Blocks
+
+Actions can contain anonymous run blocks in place of class-defined actions.
+
+```ruby
+class GenerateGreeting
+  extend Arq::Action
+
+  params  :name
+  returns :message
+
+  run do
+    [
+      run do
+        @message = ["welcome to arq,", @name]
+      end,
+      run do
+        @message = @message.join(" ")
+      end
+    ]
+  end
+end
+
+result = GenerateGreeting.call(name: "y'all")
+result[:message] # => "welcome to arq, y'all"
+```
+
 ### Failing
 
 Calling either `#fail!` or `#fail_now!` will cause the context to enter a failure state, with the latter preventing further processing of the current action. Running `#call` with a failed context will immediately return.
