@@ -73,7 +73,7 @@ Actions can return a sequence of other actions to run.
 class SpellFoo
   extend Arq::Action
 
-  params  :string, :o_count
+  params :string, :o_count
 
   run do
     [
