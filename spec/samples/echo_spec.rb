@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "spec_helper"
-require "arq"
-
 class Echo
   extend Arq::Action
 

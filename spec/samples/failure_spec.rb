@@ -3,9 +3,6 @@
 # Verifies that:
 #   - Instance variables are exported to the context even when the action is failed
 
-require "spec_helper"
-require "arq"
-
 class Failure
   extend Arq::Action
 
