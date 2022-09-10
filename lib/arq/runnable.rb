@@ -5,14 +5,14 @@ module Arq
   # A Runnable is generated from an Action.
   class Runnable
     def initialize(ctx, params = [], returns = [], &block)
-      @ctx     = ctx
-      @params  = params
-      @returns = returns
-      @block   = block
+      @_ctx     = ctx
+      @_params  = params
+      @_returns = returns
+      @_block   = block
     end
 
     def call
-      return if @ctx.failure?
+      return if @_ctx.failure?
 
       validate_required_params
 
@@ -22,28 +22,28 @@ module Arq
       run_sequence(val) if val.is_a?(Array)
 
       # Only validate returns if context is successful
-      validate_required_returns if @ctx.success?
+      validate_required_returns if @_ctx.success?
 
       val
     end
 
     def run(&block)
-      Arq::Runnable.new(@ctx, [], [], &block)
+      Arq::Runnable.new(@_ctx, [], [], &block)
     end
 
     def fail!(message = nil)
-      @ctx.fail!(message)
+      @_ctx.fail!(message)
     end
 
     def fail_now!(message = nil)
-      @ctx.fail_now!(message)
+      @_ctx.fail_now!(message)
     end
 
     private
 
     def run_block
       with_context do
-        instance_eval(&@block)
+        instance_eval(&@_block)
       rescue Arq::FailureError
         nil
       end
@@ -53,7 +53,7 @@ module Arq
       sequence.each do |e|
         case e
         when Arq::Action
-          e.call(@ctx)
+          e.call(@_ctx)
         when Arq::Runnable
           e.call
         end
@@ -64,45 +64,44 @@ module Arq
     # imports all context parameters and any new instance vars into the context.
     # Returns the return value of the block.
     def with_context
-      # Grab all current variables to know what is being returned
-      before_vars = instance_variables
-
-      # Load all context parameters into runnable instance
-      import_context_to_vars
+      import_context
 
       # Run block
       val = yield
 
-      # Grab all ctx + new vars
-      ctx_vars = instance_variables - before_vars
-
-      # Import instance vars into ctx
-      import_vars_to_context(ctx_vars)
+      export_variables
 
       # Return block value
       val
     end
 
-    def import_context_to_vars
-      @ctx.each do |key, val|
+    # Load parameters of context as instance variables
+    def import_context
+      @_ctx.each do |key, val|
         instance_variable_set(:"@#{key}", val)
       end
     end
 
-    def import_vars_to_context(vars)
+    # Exports instance variables (excluding those prefixed with _) to the context
+    def export_variables
+      # Filter out vars starting with _
+      vars = instance_variables.filter do |key|
+        !key.start_with?("@_")
+      end
+
       vars.each do |var|
         key = var[1..].to_sym
-        @ctx[key] = instance_variable_get(var)
+        @_ctx[key] = instance_variable_get(var)
       end
     end
 
     def validate_required_params
-      missing_params = (@params - @ctx.keys)
+      missing_params = (@_params - @_ctx.keys)
       raise Arq::ParametersNotInContextError, missing_params unless missing_params.empty?
     end
 
     def validate_required_returns
-      missing_returns = (@returns - @ctx.keys)
+      missing_returns = (@_returns - @_ctx.keys)
       raise Arq::ReturnValuesNotInContextError, missing_returns unless missing_returns.empty?
     end
   end
