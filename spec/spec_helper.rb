@@ -4,6 +4,14 @@ require "arq"
 
 require "faker"
 
+# Attempt load pry
+# rubocop:disable Lint/SuppressedException
+begin
+  require "pry"
+rescue LoadError
+end
+# rubocop:enable Lint/SuppressedException
+
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
