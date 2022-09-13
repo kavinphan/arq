@@ -5,6 +5,8 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in arq.gemspec
 gemspec
 
+gem "activesupport"
+
 group :development do
   gem "pry"
 end
