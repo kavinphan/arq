@@ -2,23 +2,26 @@
 
 module Arq
   # Module to extend to create an action.
+  # Class methods are used to configure the action itself.
+  # Instance methods are exposed to the block passed into `run`.
   module Action
     def self.extended(base)
       base.extend(ClassMethods)
       base.include(InstanceMethods)
     end
 
-    def self.included(base)
+    def self.included(_base)
       raise "`Arq::Action` should be `extended`"
     end
 
+    # Methods and fields exposed to configure the action.
     module ClassMethods
       # Runs the stored block with variables from the provided context.
       def call(ctx = Arq::Context.new)
         ctx = transform_input_context(ctx)
 
-        inst = self.new(ctx)
-        inst.call
+        inst = new(ctx)
+        inst.run
 
         ctx
       end
@@ -60,47 +63,79 @@ module Arq
 
       def run(&block)
         return "Block required" unless block_given?
+
         @run_block = block
       end
     end
 
+    # Methods and fields exposed to the run block.
     module InstanceMethods
       def initialize(ctx)
         @_ctx = ctx
       end
 
-      def call
+      # This is the entry-point for the action's execution.
+      # rubocop:disable Metrics/MethodLength
+      def run
         return if @_ctx.failure?
-  
+
         _validate_required_params
-  
-        val = _run
-  
+        _import_context
+
+        # Suppress `FailureError`s since they're used to just exit the action.
+        begin
+          # Instance eval to expose instance variables.
+          instance_eval(&self.class.run_block)
+        rescue Arq::FailureError
+          nil
+        end
+
+        _export_variables
+
         # Only validate returns if context is successful
         _validate_required_returns if @_ctx.success?
-  
-        val
+
+        nil
+      end
+      # rubocop:enable Metrics/MethodLength
+
+      # Used to call another action using the current action's context.
+      # Because of this, the context is exported and then imported again.
+      def call_other(action)
+        _export_variables
+        action.call(@_ctx)
+        _import_context
       end
 
+      # Fails the context without exiting the current action.
       def fail!(message = nil)
         @_ctx.fail!(message)
       end
-  
+
+      # Fails the context and exits the current action.
       def fail_now!(message = nil)
         @_ctx.fail_now!(message)
       end
 
-      private
-
-      def _run
-        _import_context
-        val = instance_eval(&self.class.run_block)
-        _export_variables
-
-        val
-      rescue Arq::FailureError
-        nil
+      # Used to easily call other actions via snake-cased modules and dot accessors.
+      # IE `Foo::Bar::Action` can be called via `foo.bar.action`
+      def method_missing(method, *args, &block)
+        obj = Object.const_get(method.to_s.camelize)
+        case obj
+        when Arq::Action
+          self.call_other(obj)
+        when Module
+          Arq::ModuleHash.new(obj, self)
+        end
+      rescue NameError => _e
+        super
       end
+
+      def respond_to_missing?(method, include_private: false)
+        Object.const_defined?(method.to_s.camelize) || super
+      end
+
+      private
 
       # Load parameters of context as instance variables
       def _import_context
