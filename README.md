@@ -26,7 +26,7 @@ gem install arq
 
 ### Actions
 
-Actions are the building blocks of arq. Each action has a strict set of parameters and return values that must exist when the action is run and ended, respectfully. They can be [run directly](#running-an-action) or [used in other actions](#chaining-actions).
+Actions are the building blocks of arq. Each action has a strict set of parameters and return values that must exist when the action is run and ended, respectfully. They can be [run directly](#running-actions) or [used in other actions](#calling-other-actions).
 
 Actions are run with a given `Arq::Context` (a light wrapper around `Hash`) whose values are exposed via instance variables and are used as the parameters. Return values are set via instance variables as well.
 
@@ -65,9 +65,9 @@ Echo.call(something_else: 2)
 
 Likewise if the resulting context does not contain the return values defined by the action, `Arq::ReturnValuesNotInContextError` is raised.
 
-### Chaining Actions
+### Calling Other Actions
 
-Actions can return a sequence of other actions to run.
+Actions can call other actions.
 
 ```ruby
 class SpellFoo
@@ -76,10 +76,11 @@ class SpellFoo
   params :string, :o_count
 
   run do
-    [
-      AddF,
-      *Array.new(@o_count) { AddO }
-    ]
+    add_f
+
+    @o_count.times do
+      add_o
+    end
   end
 end
 
@@ -105,33 +106,6 @@ end
 
 result = SpellFoo.call(string: "spelling time: ", o_count: 5)
 result[:string] # => "spelling time: fooooo"
-```
-
-### Anonymous Run Blocks
-
-Actions can contain anonymous run blocks in place of class-defined actions.
-
-```ruby
-class GenerateGreeting
-  extend Arq::Action
-
-  params  :name
-  returns :message
-
-  run do
-    [
-      run do
-        @message = ["welcome to arq,", @name]
-      end,
-      run do
-        @message = @message.join(" ")
-      end
-    ]
-  end
-end
-
-result = GenerateGreeting.call(name: "y'all")
-result[:message] # => "welcome to arq, y'all"
 ```
 
 ### Failing

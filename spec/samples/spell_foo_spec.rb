@@ -9,10 +9,11 @@ class SpellFoo
     # Can't spell foo with less than 2 Os
     fail_now!("o_count must be >=2") if @o_count < 2
 
-    [
-      AddF,
-      *Array.new(@o_count) { AddO }
-    ]
+    add_f
+
+    @o_count.times do
+      add_o
+    end
   end
 end
 
