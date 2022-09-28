@@ -67,7 +67,7 @@ Likewise if the resulting context does not contain the return values defined by 
 
 ### Calling Other Actions
 
-Actions can call other actions.
+Actions can call other actions via a **snake-cased namespace with dot-accessors**.
 
 ```ruby
 class SpellFoo
@@ -79,7 +79,7 @@ class SpellFoo
     add_f
 
     @o_count.times do
-      add_o
+      nested.actions.add_o
     end
   end
 end
@@ -94,13 +94,17 @@ class AddF
   end
 end
 
-class AddO
-  extend Arq::Action
+module Nested
+  module Actions
+    class AddO
+      extend Arq::Action
 
-  params :string
+      params :string
 
-  run do
-    @string += "o"
+      run do
+        @string += "o"
+      end
+    end
   end
 end
 
