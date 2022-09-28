@@ -123,7 +123,7 @@ module Arq
         obj = Object.const_get(method.to_s.camelize)
         case obj
         when Arq::Action
-          self.call_other(obj)
+          call_other(obj)
         when Module
           Arq::ModuleHash.new(obj, self)
         end
