@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.3.1] - 2022-09-29
+
 - Refactor ModuleHash to ActionModuleHash.
 - De-dupe action/module handling from Action into ActionModuleHash.
 
