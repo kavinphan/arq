@@ -1,5 +1,13 @@
 ## [Unreleased]
 
+## [0.3.0] - 2022-09-28
+
+- Remove support for running lists of actions and anonymous actions.
+- Add Active Support gem
+- Refactor Runnable into Action
+- Remove Runnable
+- Support calling other actions via snake-cased paths with dot-accessors.
+
 ## [0.2.1] - 2022-09-08
 
 - Default `Action#call` param to new context
