@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+- Refactor ModuleHash to ActionModuleHash.
+- De-dupe action/module handling from Action into ActionModuleHash.
+
 ## [0.3.0] - 2022-09-28
 
 - Remove support for running lists of actions and anonymous actions.

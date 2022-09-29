@@ -117,18 +117,21 @@ module Arq
         @_ctx.fail_now!(message)
       end
 
-      # Used to easily call other actions via snake-cased modules and dot accessors.
+      # Used to easily call other actions via snake-cased paths with dot accessors.
       # IE `Foo::Bar::Action` can be called via `foo.bar.action`
       def method_missing(method, *args, &block)
-        obj = Object.const_get(method.to_s.camelize)
-        case obj
-        when Arq::Action
-          call_other(obj)
-        when Module
-          Arq::ModuleHash.new(obj, self)
-        end
-      rescue NameError => _e
-        super
+        # Format method as module path.
+        formatted = method.to_s.camelize
+
+        # Attempt to find object.
+        obj = if Object.const_defined?(formatted)
+                Object.const_get(formatted)
+              else
+                return super
+              end
+
+        # Defer handling to ActionModuleHash
+        Arq::ActionModuleHash.from(obj, self)
       end
 
       def respond_to_missing?(method, include_private: false)
